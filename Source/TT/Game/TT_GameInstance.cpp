@@ -3,7 +3,6 @@
 
 #include "TT_GameInstance.h"
 
-/*
 bool UTT_GameInstance::GetWeaponInfoByName(FName NameWeapon, FWeaponInfo& OutInfo)
 {
 	bool bIsFind = false;
@@ -73,4 +72,4 @@ bool UTT_GameInstance::GetDropItemInfoByName(FName NameItem, FDropItem& OutInfo)
 	
 	return bIsFind;
 }
-*/
+
