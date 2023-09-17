@@ -29,5 +29,15 @@ protected:
 
 	void Jump();
 	void StopJump();
+	void Aim();
+	void Sprint();
+	void Fire();
+	void Reload();
+
+private:
+
+	bool bIsFiring = false;
+	bool bIsAiming = false;
+	bool bIsSprinting = false;
 	
 };

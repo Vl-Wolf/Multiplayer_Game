@@ -3,6 +3,7 @@
 
 #include "TT/Character/TT_PlayerController.h"
 
+#include "TTCharacter.h"
 #include "GameFramework/Character.h"
 
 ATT_PlayerController::ATT_PlayerController()
@@ -23,6 +24,13 @@ void ATT_PlayerController::SetupInputComponent()
 	//Action
 	InputComponent->BindAction("Jump", IE_Pressed, this, &ATT_PlayerController::Jump);
 	InputComponent->BindAction("Jump", IE_Released, this, &ATT_PlayerController::StopJump);
+	InputComponent->BindAction("Aim", IE_Pressed, this, &ATT_PlayerController::Aim);
+	InputComponent->BindAction("Aim", IE_Released, this, &ATT_PlayerController::Aim);
+	InputComponent->BindAction("Sprint", IE_Pressed, this, &ATT_PlayerController::Sprint);
+	InputComponent->BindAction("Sprint", IE_Released, this, &ATT_PlayerController::Sprint);
+	InputComponent->BindAction("Reload", IE_Pressed, this, &ATT_PlayerController::Reload);
+	InputComponent->BindAction("Fire", IE_Pressed, this, &ATT_PlayerController::Fire);
+	InputComponent->BindAction("Fire", IE_Released, this, &ATT_PlayerController::Fire);
 	
 }
 
@@ -78,6 +86,82 @@ void ATT_PlayerController::StopJump()
 		if (MyCharacter)
 		{
 			MyCharacter->StopJumping();
+		}
+	}
+}
+
+void ATT_PlayerController::Aim()
+{
+	ATTCharacter* MyCharacter = Cast<ATTCharacter>(GetPawn());
+	
+	if (!bIsAiming)
+	{
+		if (MyCharacter)
+		{
+			MyCharacter->InputAimPressed();
+			bIsAiming = true;
+		}
+	}
+	else
+	{
+		if (MyCharacter)
+		{
+			MyCharacter->InputAimReleased();
+			bIsAiming = false;
+		}
+	}
+}
+
+void ATT_PlayerController::Sprint()
+{
+	ATTCharacter* MyCharacter = Cast<ATTCharacter>(GetPawn());
+	
+	if (!bIsSprinting)
+	{
+		if (MyCharacter)
+		{
+			MyCharacter->InputSprintPressed();
+			bIsSprinting = true;
+		}
+	}
+	else
+	{
+		if (MyCharacter)
+		{
+			MyCharacter->InputAimReleased();
+			bIsSprinting = false;
+		}
+	}
+}
+
+void ATT_PlayerController::Reload()
+{
+	ATTCharacter* MyCharacter = Cast<ATTCharacter>(GetPawn());
+	
+	if (MyCharacter)
+	{
+		MyCharacter->TryReloadWeapon();
+	}
+}
+
+void ATT_PlayerController::Fire()
+{
+	ATTCharacter* MyCharacter = Cast<ATTCharacter>(GetPawn());
+	
+	if (!bIsFiring)
+	{
+		if (MyCharacter)
+		{
+			MyCharacter->AttackEvent(true);
+			bIsFiring = true;
+		}
+	}
+	else
+	{
+		if (MyCharacter)
+		{
+			MyCharacter->AttackEvent(false);
+			bIsFiring = false;
 		}
 	}
 }
