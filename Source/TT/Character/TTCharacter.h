@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "TT_HealthComponent.h"
+#include "TT_InventoryComponent.h"
 #include "GameFramework/Character.h"
 #include "TT/FuncLibrary/Types.h"
 #include "TTCharacter.generated.h"
@@ -66,6 +67,9 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Health", meta = (AllowPrivateAccess = "true"))
 	UTT_HealthComponent* HealthComponent;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Inventory", meta=(AllowPrivateAccess="true"))
+	UTT_InventoryComponent* InventoryComponent;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Movement")
 	FCharacterSpeed CharacterSpeed;
 
@@ -81,13 +85,18 @@ public:
 	UFUNCTION()
 	void MovementTick(float DeltaTime);
 
+	UTT_InventoryComponent* GetInventoryComponent() const
+	{
+		return InventoryComponent;
+	}
+
 	void CharacterUpdate();
 	void ChangeMovementState();
 
 	void AttackEvent(bool bIsFiring);
 
 	UFUNCTION()
-	void InitWeapon(FName WeaponName, FAdditionalWeaponInfo AdditionalWeaponInfo, int8 NewCurrentIndexWeapon);
+	void InitWeapon(FName WeaponName, FAdditionalWeaponInfo AdditionalWeaponInfo, int32 NewCurrentIndexWeapon);
 
 	void TryReloadWeapon();
 
@@ -134,6 +143,8 @@ public:
 private:
 
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+
+	virtual void BeginPlay() override;
 	
 };
 

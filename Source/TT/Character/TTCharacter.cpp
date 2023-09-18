@@ -45,6 +45,7 @@ ATTCharacter::ATTCharacter()
 	// Camera does not rotate relative to arm
 
 	HealthComponent = CreateDefaultSubobject<UTT_HealthComponent>(TEXT("HealthComponent"));
+	InventoryComponent = CreateDefaultSubobject<UTT_InventoryComponent>(TEXT("InventoryComponent"));
 
 	PrimaryActorTick.bCanEverTick = true;
 	PrimaryActorTick.bStartWithTickEnabled = true;
@@ -54,6 +55,11 @@ ATTCharacter::ATTCharacter()
 	if (HealthComponent)
 	{
 		HealthComponent->OnDead.AddDynamic(this, &ATTCharacter::CharacterDead);
+	}
+
+	if (InventoryComponent)
+	{
+		InventoryComponent->OnSwitchWeapon.AddDynamic(this, &ATTCharacter::InitWeapon);
 	}
 	
 }
@@ -287,7 +293,7 @@ void ATTCharacter::AttackEvent(bool bIsFiring)
 	}
 }
 
-void ATTCharacter::InitWeapon(FName WeaponName, FAdditionalWeaponInfo AdditionalWeaponInfo, int8 NewCurrentIndexWeapon)
+void ATTCharacter::InitWeapon(FName WeaponName, FAdditionalWeaponInfo AdditionalWeaponInfo, int32 NewCurrentIndexWeapon)
 {
 	if (CurrentWeapon)
 	{
@@ -463,4 +469,11 @@ void ATTCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLife
 	DOREPLIFETIME(ATTCharacter, CurrentWeapon);
 	DOREPLIFETIME(ATTCharacter, CurrentIndexWeapon);
 	
+}
+
+void ATTCharacter::BeginPlay()
+{
+	Super::BeginPlay();
+
+	//InitWeapon("Rifle", , 0);
 }

@@ -14,6 +14,8 @@ class TT_API ATT_PlayerController : public APlayerController
 {
 	GENERATED_BODY()
 
+	virtual void OnPossess(APawn* InPawn) override;
+
 public:
 
 	ATT_PlayerController();

@@ -5,6 +5,21 @@
 
 #include "TTCharacter.h"
 #include "GameFramework/Character.h"
+#include "TT/Game/TT_PlayerState.h"
+
+void ATT_PlayerController::OnPossess(APawn* InPawn)
+{
+	Super::OnPossess(InPawn);
+
+	ATTCharacter* MyCharacter = Cast<ATTCharacter>(InPawn);
+	if (MyCharacter)
+	{
+		ATT_PlayerState* MyPlayerState = GetPlayerState<ATT_PlayerState>();
+		{
+			MyCharacter->GetInventoryComponent()->InitInventory_OnServer(MyPlayerState->WeaponSlot, MyPlayerState->AmmoSlot);
+		}
+	}
+}
 
 ATT_PlayerController::ATT_PlayerController()
 {
