@@ -36,7 +36,7 @@ protected:
 	void Fire();
 	void Reload();
 
-private:
+public:
 
 	bool bIsFiring = false;
 	bool bIsAiming = false;

@@ -113,16 +113,16 @@ void ATT_PlayerController::Aim()
 	{
 		if (MyCharacter)
 		{
-			MyCharacter->InputAimPressed();
 			bIsAiming = true;
+			MyCharacter->InputAimPressed();
 		}
 	}
 	else
 	{
 		if (MyCharacter)
 		{
-			MyCharacter->InputAimReleased();
 			bIsAiming = false;
+			MyCharacter->InputAimReleased();
 		}
 	}
 }
@@ -135,16 +135,16 @@ void ATT_PlayerController::Sprint()
 	{
 		if (MyCharacter)
 		{
-			MyCharacter->InputSprintPressed();
 			bIsSprinting = true;
+			MyCharacter->InputSprintPressed();
 		}
 	}
 	else
 	{
 		if (MyCharacter)
 		{
-			MyCharacter->InputAimReleased();
 			bIsSprinting = false;
+			MyCharacter->InputSprintReleased();
 		}
 	}
 }

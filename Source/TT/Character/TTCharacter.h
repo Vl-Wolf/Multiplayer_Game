@@ -33,19 +33,14 @@ public:
 
 	void InputAttackPressed();
 	void InputAttackReleased();
-
-	void InputWalkPressed();
-	void InputWalkReleased();
-
+	
 	void InputSprintPressed();
 	void InputSprintReleased();
 
 	void InputAimPressed();
 	void InputAimReleased();
-
-	bool SprintEnabled = false;
+	
 	bool WalkEnabled = false;
-	bool AimEnabled = false;
 
 protected:
 

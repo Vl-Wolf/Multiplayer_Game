@@ -84,39 +84,23 @@ void ATTCharacter::InputAttackReleased()
 	AttackEvent(false);
 }
 
-void ATTCharacter::InputWalkPressed()
-{
-	WalkEnabled = true;
-	ChangeMovementState();
-}
-
-void ATTCharacter::InputWalkReleased()
-{
-	WalkEnabled = false;
-	ChangeMovementState();
-}
-
 void ATTCharacter::InputSprintPressed()
 {
-	SprintEnabled = true;
 	ChangeMovementState();
 }
 
 void ATTCharacter::InputSprintReleased()
 {
-	SprintEnabled = false;
 	ChangeMovementState();
 }
 
 void ATTCharacter::InputAimPressed()
 {
-	AimEnabled = true;
 	ChangeMovementState();
 }
 
 void ATTCharacter::InputAimReleased()
 {
-	AimEnabled = false;
 	ChangeMovementState();
 }
 
@@ -126,7 +110,7 @@ void ATTCharacter::MovementTick(float DeltaTime)
 	{
 		if (GetController() && GetController()->IsLocalController())
 		{
-			ATT_PlayerController* MyController = Cast<ATT_PlayerController>(GetWorld());
+			ATT_PlayerController* MyController = Cast<ATT_PlayerController>(GetWorld()->GetFirstPlayerController());
 			if (MyController)
 			{
 				FHitResult HitResult;
@@ -249,23 +233,26 @@ void ATTCharacter::ChangeMovementState()
 {
 	EMovementState NewState = EMovementState::Walk_State;
 
-	if (!SprintEnabled && !AimEnabled)
+	ATT_PlayerController* MyController = Cast<ATT_PlayerController>(GetWorld()->GetFirstPlayerController());
+	if (MyController)
 	{
-		NewState = EMovementState::Walk_State;
-	}
-	else
-	{
-		if (SprintEnabled)
+		if (!MyController->bIsSprinting && !MyController->bIsAiming)
 		{
-			NewState = EMovementState::Sprint_State;
-			WalkEnabled = false;
-			AimEnabled = false;
+			NewState = EMovementState::Walk_State;
 		}
 		else
 		{
-			if (!SprintEnabled && !WalkEnabled)
+			if (MyController->bIsSprinting)
 			{
-				NewState = EMovementState::Aim_State;
+				NewState = EMovementState::Sprint_State;
+				WalkEnabled = false;
+			}
+			else
+			{
+				if (!MyController->bIsSprinting && MyController->bIsAiming)
+				{
+					NewState = EMovementState::Aim_State;
+				}
 			}
 		}
 	}
@@ -474,6 +461,5 @@ void ATTCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLife
 void ATTCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-
-	//InitWeapon("Rifle", , 0);
+	
 }
