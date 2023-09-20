@@ -22,7 +22,7 @@ class ATTCharacter : public ACharacter
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	class UCameraComponent* FollowCamera;
 
-	void Tick(float DeltaSeconds) override;
+	virtual void Tick(float DeltaSeconds) override;
 public:
 	ATTCharacter();
 	
@@ -30,17 +30,12 @@ public:
 	FORCEINLINE USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
 	/** Returns FollowCamera subobject **/
 	FORCEINLINE UCameraComponent* GetFollowCamera() const { return FollowCamera; }
-
-	void InputAttackPressed();
-	void InputAttackReleased();
 	
 	void InputSprintPressed();
 	void InputSprintReleased();
 
 	void InputAimPressed();
 	void InputAimReleased();
-	
-	bool WalkEnabled = false;
 
 protected:
 
@@ -76,9 +71,6 @@ protected:
 public:
 
 	FTimerHandle TimerHandle_RagdollTimer;
-	
-	UFUNCTION()
-	void MovementTick(float DeltaTime);
 
 	UTT_InventoryComponent* GetInventoryComponent() const
 	{

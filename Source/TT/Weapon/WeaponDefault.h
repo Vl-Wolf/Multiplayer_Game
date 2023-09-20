@@ -6,7 +6,6 @@
 #include "Components/ArrowComponent.h"
 #include "GameFramework/Actor.h"
 #include "TT/FuncLibrary/Types.h"
-#include "TT/Weapon/ProjectileDefault.h"
 #include "WeaponDefault.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnWeaponReloadStart, UAnimMontage*, AnimReloadStart);
@@ -68,7 +67,7 @@ public:
 	bool DropShellFlag = false;
 	float DropShellTImer = -1.0f;
 
-	UPROPERTY(Replicated)
+	UPROPERTY(Replicated, VisibleAnywhere, BlueprintReadOnly)
 	FVector ShootEndLocation = FVector(0);
 
 protected:
@@ -77,7 +76,6 @@ protected:
 
 	void FireTick(float DeltaTime);
 	void ReloadTick(float DeltaTime);
-	void DispersionTick(float DeltaTime);
 	void DropTick(float DeltaTime);
 	void ShellDropTick(float DeltaTime);
 
@@ -85,7 +83,6 @@ protected:
 
 	UFUNCTION()
 	void Fire();
-	
 
 public:
 	
@@ -97,17 +94,6 @@ public:
 	bool CheckWeaponCanFire();
 
 	FProjectileInfo GetProjectile();
-
-	UFUNCTION(Server, Reliable)
-	void UpdateStateWeapon_OnServer(EMovementState NewMovementState);
-
-	void ChangeDispersionByShoot();
-
-	float GetCurrentDispersion() const;
-	
-	FVector ApplyDispersionToShoot(FVector DirectionShoot) const;
-
-	FVector GetFireEndLocation() const;
 
 	int8 GetNumberProjectileByShoot() const;
 
@@ -131,9 +117,7 @@ public:
 	bool ShowDebug = false;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Debug")
 	float SizeVectorToChangeShootDirectionLogic = 100.0f;
-
-	UFUNCTION(Server, Unreliable)
-	void UpdateWeaponByCharacterMovementState_OnServer(FVector NewShootEndLocation, bool NewShouldReduceDispersion);
+	
 	UFUNCTION(NetMulticast, Unreliable)
 	void AnimWeaponStart_Multicast(UAnimMontage* Anim);
 	UFUNCTION(NetMulticast, Unreliable)

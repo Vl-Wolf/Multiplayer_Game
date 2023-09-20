@@ -35,7 +35,7 @@ ATTCharacter::ATTCharacter()
 	// Create a camera boom (pulls in towards the player if there is a collision)
 	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
 	CameraBoom->SetupAttachment(RootComponent);
-	CameraBoom->TargetArmLength = 300.0f; // The camera follows at this distance behind the character	
+	CameraBoom->TargetArmLength = 100.0f; // The camera follows at this distance behind the character	
 	CameraBoom->bUsePawnControlRotation = true; // Rotate the arm based on the controller
 
 	// Create a follow camera
@@ -67,21 +67,6 @@ ATTCharacter::ATTCharacter()
 void ATTCharacter::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
-
-	MovementTick(DeltaSeconds);
-}
-
-void ATTCharacter::InputAttackPressed()
-{
-	if (HealthComponent && HealthComponent->GetIsAlive())
-	{
-		AttackEvent(true);
-	}
-}
-
-void ATTCharacter::InputAttackReleased()
-{
-	AttackEvent(false);
 }
 
 void ATTCharacter::InputSprintPressed()
@@ -97,51 +82,13 @@ void ATTCharacter::InputSprintReleased()
 void ATTCharacter::InputAimPressed()
 {
 	ChangeMovementState();
+	CameraBoom->TargetArmLength = 30.0f;
 }
 
 void ATTCharacter::InputAimReleased()
 {
 	ChangeMovementState();
-}
-
-void ATTCharacter::MovementTick(float DeltaTime)
-{
-	if (HealthComponent && HealthComponent->GetIsAlive())
-	{
-		if (GetController() && GetController()->IsLocalController())
-		{
-			ATT_PlayerController* MyController = Cast<ATT_PlayerController>(GetWorld()->GetFirstPlayerController());
-			if (MyController)
-			{
-				FHitResult HitResult;
-				MyController->GetHitResultUnderCursor(ECC_GameTraceChannel1, true, HitResult);
-				
-				if (CurrentWeapon)
-				{
-					FVector Displacement = FVector(0);
-					bool bIsReduceDispersion = false;
-
-					switch(MovementState)
-					{
-					case EMovementState::Aim_State:
-						Displacement = FVector(0.0f, 0.0f, 160.0f);
-						bIsReduceDispersion = true;
-						break;
-					case EMovementState::Walk_State:
-						Displacement = FVector(0.0f, 0.0f, 120.0f);
-						bIsReduceDispersion = true;
-						break;
-					case EMovementState::Sprint_State:
-						break;
-					default:
-						break;
-					}
-
-					CurrentWeapon->UpdateWeaponByCharacterMovementState_OnServer(HitResult.Location + Displacement, bIsReduceDispersion);
-				}
-			}
-		}
-	}
+	CameraBoom->TargetArmLength = 100.0f;
 }
 
 EMovementState ATTCharacter::GetMovementState()
@@ -245,7 +192,6 @@ void ATTCharacter::ChangeMovementState()
 			if (MyController->bIsSprinting)
 			{
 				NewState = EMovementState::Sprint_State;
-				WalkEnabled = false;
 			}
 			else
 			{
@@ -258,25 +204,21 @@ void ATTCharacter::ChangeMovementState()
 	}
 
 	SetMovementState_OnServer(NewState);
-
-	AWeaponDefault* MyWeapon = GetCurrentWeapon();
-	if (MyWeapon)
-	{
-		MyWeapon->UpdateStateWeapon_OnServer(NewState);
-	}
 }
 
 void ATTCharacter::AttackEvent(bool bIsFiring)
 {
-	AWeaponDefault* MyWeapon = nullptr;
-	MyWeapon = GetCurrentWeapon();
-	if (MyWeapon)
+	if (HealthComponent && HealthComponent->GetIsAlive())
 	{
-		MyWeapon->SetWeaponStateFire_OnServer(bIsFiring);
-	}
-	else
-	{
-		UE_LOG(LogTemp, Warning, TEXT("ATTCharacter::AttackCharEvent - CurrentWeapon -NULL"));
+		AWeaponDefault* MyWeapon = GetCurrentWeapon();
+		if (MyWeapon)
+		{
+			MyWeapon->SetWeaponStateFire_OnServer(bIsFiring);
+		}
+		else
+		{
+			UE_LOG(LogTemp, Warning, TEXT("ATTCharacter::AttackCharEvent - CurrentWeapon -NULL"));
+		}
 	}
 }
 
@@ -289,10 +231,9 @@ void ATTCharacter::InitWeapon(FName WeaponName, FAdditionalWeaponInfo Additional
 	}
 
 	UTT_GameInstance* MyGI = Cast<UTT_GameInstance>(GetGameInstance());
-	FWeaponInfo MyWeaponInfo;
-
 	if (MyGI)
 	{
+		FWeaponInfo MyWeaponInfo;
 		if (MyGI->GetWeaponInfoByName(WeaponName, MyWeaponInfo))
 		{
 			if (MyWeaponInfo.WeaponClass)
@@ -317,14 +258,15 @@ void ATTCharacter::InitWeapon(FName WeaponName, FAdditionalWeaponInfo Additional
 					MyWeapon->WeaponName = WeaponName;
 					MyWeapon->WeaponInfo = MyWeaponInfo;
 					MyWeapon->ReloadTimer = MyWeaponInfo.ReloadTime;
-					MyWeapon->UpdateStateWeapon_OnServer(MovementState);
 					MyWeapon->AdditionalWeaponInfo = AdditionalWeaponInfo;
 
 					CurrentIndexWeapon = NewCurrentIndexWeapon;
 
-					MyWeapon->OnWeaponReloadStart.AddDynamic(this, &ATTCharacter::WeaponReloadStart);
-					MyWeapon->OnWeaponReloadEnd.AddDynamic(this, &ATTCharacter::WeaponReloadEnd);
-					MyWeapon->OnWeaponFire.AddDynamic(this, &ATTCharacter::WeaponFire);
+					MyWeapon->SetActorRotation(FollowCamera->GetForwardVector().Rotation());
+
+					//MyWeapon->OnWeaponReloadStart.AddDynamic(this, &ATTCharacter::WeaponReloadStart);
+					//MyWeapon->OnWeaponReloadEnd.AddDynamic(this, &ATTCharacter::WeaponReloadEnd);
+					//MyWeapon->OnWeaponFire.AddDynamic(this, &ATTCharacter::WeaponFire);
 
 					if (CurrentWeapon->GetWeaponRound() <= 0 && CurrentWeapon->CheckCanWeaponReload())
 					{

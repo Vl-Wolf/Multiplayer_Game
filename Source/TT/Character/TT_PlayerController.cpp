@@ -167,16 +167,16 @@ void ATT_PlayerController::Fire()
 	{
 		if (MyCharacter)
 		{
-			MyCharacter->AttackEvent(true);
 			bIsFiring = true;
+			MyCharacter->AttackEvent(bIsFiring);
 		}
 	}
 	else
 	{
 		if (MyCharacter)
 		{
-			MyCharacter->AttackEvent(false);
 			bIsFiring = false;
+			MyCharacter->AttackEvent(bIsFiring);
 		}
 	}
 }
