@@ -9,6 +9,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Net/UnrealNetwork.h"
+#include "TT/Character/TT_InventoryComponent.h"
 
 
 // Sets default values
@@ -373,7 +374,20 @@ bool AWeaponDefault::CheckCanWeaponReload()
 
 	if (GetOwner())
 	{
-		
+		UTT_InventoryComponent* MyInventory = Cast<UTT_InventoryComponent>(GetOwner()->GetComponentByClass(UTT_InventoryComponent::StaticClass()));
+		if (MyInventory)
+		{
+			int8 AvailableAmmoForWeapon;
+			if (!MyInventory->CheckAmmoForWeapon(WeaponInfo.WeaponType, AvailableAmmoForWeapon))
+			{
+				Result = false;
+				MyInventory->OnWeaponNotHaveRound.Broadcast(MyInventory->GetWeaponIndexSlotByName(WeaponName));
+			}
+			else
+			{
+				MyInventory->OnWeaponHaveRound.Broadcast(MyInventory->GetWeaponIndexSlotByName(WeaponName));
+			}
+		}
 	}
 	
 	return Result;
@@ -382,6 +396,18 @@ bool AWeaponDefault::CheckCanWeaponReload()
 int8 AWeaponDefault::GetAvailableAmmoForReload()
 {
 	int8 AvailableAmmoForWeapon = WeaponInfo.MaxRound;
+
+	if (GetOwner())
+	{
+		UTT_InventoryComponent* MyInventory = Cast<UTT_InventoryComponent>(GetOwner()->GetComponentByClass(UTT_InventoryComponent::StaticClass()));
+		if (MyInventory)
+		{
+			if (MyInventory->CheckAmmoForWeapon(WeaponInfo.WeaponType, AvailableAmmoForWeapon))
+			{
+				AvailableAmmoForWeapon = AvailableAmmoForWeapon;
+			}
+		}
+	}
 
 	return AvailableAmmoForWeapon;
 }

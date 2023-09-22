@@ -35,6 +35,7 @@ protected:
 	void Sprint();
 	void Fire();
 	void Reload();
+	void ChangeWeapon();
 
 public:
 

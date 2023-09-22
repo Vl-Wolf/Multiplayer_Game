@@ -262,15 +262,21 @@ void ATTCharacter::InitWeapon(FName WeaponName, FAdditionalWeaponInfo Additional
 
 					CurrentIndexWeapon = NewCurrentIndexWeapon;
 
+					//move to tick()
 					MyWeapon->SetActorRotation(FollowCamera->GetForwardVector().Rotation());
 
-					//MyWeapon->OnWeaponReloadStart.AddDynamic(this, &ATTCharacter::WeaponReloadStart);
-					//MyWeapon->OnWeaponReloadEnd.AddDynamic(this, &ATTCharacter::WeaponReloadEnd);
-					//MyWeapon->OnWeaponFire.AddDynamic(this, &ATTCharacter::WeaponFire);
+					MyWeapon->OnWeaponReloadStart.AddDynamic(this, &ATTCharacter::WeaponReloadStart);
+					MyWeapon->OnWeaponReloadEnd.AddDynamic(this, &ATTCharacter::WeaponReloadEnd);
+					MyWeapon->OnWeaponFire.AddDynamic(this, &ATTCharacter::WeaponFire);
 
 					if (CurrentWeapon->GetWeaponRound() <= 0 && CurrentWeapon->CheckCanWeaponReload())
 					{
 						CurrentWeapon->InitReload();
+					}
+
+					if (InventoryComponent)
+					{
+						InventoryComponent->OnWeaponAmmoAvailable.Broadcast(MyWeapon->WeaponInfo.WeaponType);
 					}
 				}
 			}
@@ -292,6 +298,11 @@ void ATTCharacter::TryReloadWeapon()
 
 void ATTCharacter::WeaponFire(UAnimMontage* Anim)
 {
+	if (InventoryComponent && CurrentWeapon)
+	{
+		InventoryComponent->SetAdditionalInfoWeapon(CurrentIndexWeapon, CurrentWeapon->AdditionalWeaponInfo);
+	}
+	
 	WeaponFire_BP(Anim);
 }
 
@@ -302,14 +313,51 @@ void ATTCharacter::WeaponReloadStart(UAnimMontage* Anim)
 
 void ATTCharacter::WeaponReloadEnd(bool bIsSuccess, int32 AmmoSafe)
 {
-	if (CurrentWeapon)
+	if (InventoryComponent&&  CurrentWeapon)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("ATTCharacter::WeaponReloadEnd - Weapon reload"))
+		InventoryComponent->AmmoSlotChangeValue(CurrentWeapon->WeaponInfo.WeaponType, AmmoSafe);
+		InventoryComponent->SetAdditionalInfoWeapon(CurrentIndexWeapon, CurrentWeapon->AdditionalWeaponInfo);
+	}
+
+	WeaponReloadEnd_BP(bIsSuccess);
+}
+
+void ATTCharacter::TrySwitchWeapon()
+{
+	int32 Index = GetCurrentWeaponIndex();
+	if (Index == 0)
+	{
+		Index++;
+		TrySwitchWeapon_OnServer(Index++);
+	}
+	if (Index == 1)
+	{
+		Index--;
+		TrySwitchWeapon_OnServer(Index);
 	}
 }
 
-void ATTCharacter::TrySwitchWeapon_OnServer_Implementation()
+void ATTCharacter::TrySwitchWeapon_OnServer_Implementation(int32 ToIndex)
 {
+	if (CurrentWeapon && !CurrentWeapon->WeaponReloading && InventoryComponent->WeaponSlots.IsValidIndex(ToIndex))
+	{
+		if (CurrentIndexWeapon != ToIndex && InventoryComponent)
+		{
+			int32 OldIndex = CurrentIndexWeapon;
+			FAdditionalWeaponInfo OldInfo;
+
+			if (CurrentWeapon)
+			{
+				OldInfo = CurrentWeapon->AdditionalWeaponInfo;
+				if (CurrentWeapon->WeaponReloading)
+				{
+					CurrentWeapon->CancelReload();
+				}
+			}
+
+			InventoryComponent->SwitchWeaponByIndex(ToIndex, OldIndex, OldInfo);
+		}
+	}
 }
 
 void ATTCharacter::WeaponReloadStart_BP_Implementation(UAnimMontage* Anim)

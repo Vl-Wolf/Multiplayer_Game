@@ -46,6 +46,7 @@ void ATT_PlayerController::SetupInputComponent()
 	InputComponent->BindAction("Reload", IE_Pressed, this, &ATT_PlayerController::Reload);
 	InputComponent->BindAction("Fire", IE_Pressed, this, &ATT_PlayerController::Fire);
 	InputComponent->BindAction("Fire", IE_Released, this, &ATT_PlayerController::Fire);
+	InputComponent->BindAction("ChangeWeapon", IE_Pressed, this, &ATT_PlayerController::ChangeWeapon);
 	
 }
 
@@ -156,6 +157,16 @@ void ATT_PlayerController::Reload()
 	if (MyCharacter)
 	{
 		MyCharacter->TryReloadWeapon();
+	}
+}
+
+void ATT_PlayerController::ChangeWeapon()
+{
+	ATTCharacter* MyCharacter = Cast<ATTCharacter>(GetPawn());
+	
+	if (MyCharacter)
+	{
+		MyCharacter->TrySwitchWeapon();
 	}
 }
 

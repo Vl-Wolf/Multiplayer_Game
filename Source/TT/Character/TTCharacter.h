@@ -92,7 +92,9 @@ public:
 	void WeaponReloadEnd(bool bIsSuccess, int32 AmmoSafe);
 
 	UFUNCTION(Server, Reliable)
-	void TrySwitchWeapon_OnServer();
+	void TrySwitchWeapon_OnServer(int32 ToIndex);
+
+	void TrySwitchWeapon();
 
 	UFUNCTION(BlueprintNativeEvent)
 	void WeaponReloadStart_BP(UAnimMontage* Anim);
