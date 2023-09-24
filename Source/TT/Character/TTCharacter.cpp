@@ -327,13 +327,11 @@ void ATTCharacter::TrySwitchWeapon()
 	int32 Index = GetCurrentWeaponIndex();
 	if (Index == 0)
 	{
-		Index++;
-		TrySwitchWeapon_OnServer(Index++);
+		TrySwitchWeapon_OnServer(1);
 	}
 	if (Index == 1)
 	{
-		Index--;
-		TrySwitchWeapon_OnServer(Index);
+		TrySwitchWeapon_OnServer(0);
 	}
 }
 

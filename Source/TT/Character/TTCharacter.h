@@ -72,6 +72,7 @@ public:
 
 	FTimerHandle TimerHandle_RagdollTimer;
 
+	UFUNCTION()
 	UTT_InventoryComponent* GetInventoryComponent() const
 	{
 		return InventoryComponent;
@@ -87,8 +88,11 @@ public:
 
 	void TryReloadWeapon();
 
+	UFUNCTION()
 	void WeaponFire(UAnimMontage* Anim);
+	UFUNCTION()
 	void WeaponReloadStart(UAnimMontage* Anim);
+	UFUNCTION()
 	void WeaponReloadEnd(bool bIsSuccess, int32 AmmoSafe);
 
 	UFUNCTION(Server, Reliable)

@@ -8,7 +8,7 @@
 #include "TT_InventoryComponent.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnSwitchWeapon, FName, WeaponIdName, FAdditionalWeaponInfo, WeaponAdditionalInfo, int32, NewCurrentIndexWeapon);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnAmmoChange, EWeaponType, TypeAmmo, int32, Cout);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnAmmoChange, EWeaponType, TypeAmmo, int32, Count);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnWeaponAdditionalInfoChange, int32, IndexSlot, FAdditionalWeaponInfo, AdditionalInfo);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnWeaponAmmoEmpty, EWeaponType, WeaponType);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnWeaponAmmoAvailable, EWeaponType, WeaponType);
@@ -22,49 +22,41 @@ class TT_API UTT_InventoryComponent : public UActorComponent
 	GENERATED_BODY()
 
 public:
-	// Sets default values for this component's properties
+	
 	UTT_InventoryComponent();
 
 	UPROPERTY(BlueprintAssignable, Category = "Inventory")
-		FOnSwitchWeapon OnSwitchWeapon;
+	FOnSwitchWeapon OnSwitchWeapon;
 	UPROPERTY(BlueprintAssignable, Category = "Inventory")
-		//Event on change ammo in slots by weaponType
-		FOnAmmoChange OnAmmoChange;
+	FOnAmmoChange OnAmmoChange;
 	UPROPERTY(BlueprintAssignable, Category = "Inventory")
-		FOnWeaponAdditionalInfoChange OnWeaponAdditionalInfoChange;
-	//Event Ammo slots after change still empty rounds
+	FOnWeaponAdditionalInfoChange OnWeaponAdditionalInfoChange;
 	UPROPERTY(BlueprintAssignable, Category = "Inventory")
-		FOnWeaponAmmoEmpty OnWeaponAmmoEmpty;
-	//Event Ammo slots after change have rounds
+	FOnWeaponAmmoEmpty OnWeaponAmmoEmpty;
 	UPROPERTY(BlueprintAssignable, Category = "Inventory")
-		FOnWeaponAmmoAvailable OnWeaponAmmoAvailable;
-	//Event weapon was change by slotIndex
+	FOnWeaponAmmoAvailable OnWeaponAmmoAvailable;
 	UPROPERTY(BlueprintAssignable, Category = "Inventory")
-		FOnUpdateWeaponSlots OnUpdateWeaponSlots;
-
-	//Event current weapon not have additional_Rounds 
+	FOnUpdateWeaponSlots OnUpdateWeaponSlots;
 	UPROPERTY(BlueprintAssignable, Category = "Inventory")
-		FOnWeaponNotHaveRound OnWeaponNotHaveRound;
-	//Event current weapon have additional_Rounds 
+	FOnWeaponNotHaveRound OnWeaponNotHaveRound;
 	UPROPERTY(BlueprintAssignable, Category = "Inventory")
-		FOnWeaponHaveRound OnWeaponHaveRound;
+	FOnWeaponHaveRound OnWeaponHaveRound;
 
 	UPROPERTY(Replicated, EditAnywhere, BlueprintReadOnly, Category = "Weapons")
-		TArray<FWeaponSlot> WeaponSlots;
+	TArray<FWeaponSlot> WeaponSlots;
 	UPROPERTY(Replicated, EditAnywhere, BlueprintReadOnly, Category = "Weapons")
-		TArray<FAmmoSlot> AmmoSlots;
+	TArray<FAmmoSlot> AmmoSlots;
 
 	int32 MaxSlotsWeapon = 0;
 
 protected:
-	// Called when the game starts
+
 	virtual void BeginPlay() override;
 
 public:
-	// Called every frame
-	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
-	bool SwitchWeaponToIndexByNextPreviousIndex(int32 ChangeToIndex, int32 OldIndex, FAdditionalWeaponInfo OldInfo, bool bIsForward);
+	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+	
 	bool SwitchWeaponByIndex(int32 IndexWeaponToChange, int32 PreviousIndex, FAdditionalWeaponInfo PreviousWeaponInfo);
 
 	void SetAdditionalInfoWeapon(int32 IndexWeapon, FAdditionalWeaponInfo NewInfo);
@@ -76,46 +68,44 @@ public:
 	bool GetWeaponTypeByNameWeapon(FName IdWeaponName, EWeaponType& WeaponType);
 
 	UFUNCTION(BlueprintCallable)
-		void AmmoSlotChangeValue(EWeaponType TypeWeapon, int32 CoutChangeAmmo);
+	void AmmoSlotChangeValue(EWeaponType TypeWeapon, int32 CountChangeAmmo);
 	bool CheckAmmoForWeapon(EWeaponType TypeWeapon, int8& AvailableAmmForWeapon);
+	
+	UFUNCTION(BlueprintCallable, Category = "Interface")
+	bool CheckCanTakeAmmo(EWeaponType AmmoType);
+	UFUNCTION(BlueprintCallable, Category = "Interface")
+	bool CheckCanTakeWeapon(int32& FreeSlot);
 
-	//Interface PickUp Actors
-	UFUNCTION(BlueprintCallable, Category = "Interface")
-		bool CheckCanTakeAmmo(EWeaponType AmmoType);
-	UFUNCTION(BlueprintCallable, Category = "Interface")
-		bool CheckCanTakeWeapon(int32& FreeSlot);
-	UFUNCTION(BlueprintCallable, Category = "Interface")
-		bool SwitchWeaponToInventory(FWeaponSlot NewWeapon, int32 IndexSlot, int32 CurrentIndexWeaponChar, FDropItem& DropItemInfo);
 	UFUNCTION(Server, Reliable, BlueprintCallable, Category = "Interface")
-		void TryGetWeaponToInventory_OnServer(AActor* PickUpActor, FWeaponSlot NewWeapon);
+	void TryGetWeaponToInventory_OnServer(AActor* PickUpActor, FWeaponSlot NewWeapon);
 	UFUNCTION(Server, Reliable, BlueprintCallable, Category = "Interface")
-		void DropWeaponByIndex_OnServer(int32 ByIndex);
+	void DropWeaponByIndex_OnServer(int32 ByIndex);
 
 	UFUNCTION(BlueprintCallable, Category = "Interface")
 		bool GetDropItemInfoFromInventory(int32 IndexSlot, FDropItem& DropItemInfo);
 
-	UFUNCTION(BlueprintCallable, Category = "Inv")
-		TArray<FWeaponSlot> GetWeaponSlots();
-	UFUNCTION(BlueprintCallable, Category = "Inv")
-		TArray<FAmmoSlot> GetAmmoSlots();
+	UFUNCTION(BlueprintCallable, Category = "Inventory")
+	TArray<FWeaponSlot> GetWeaponSlots();
+	UFUNCTION(BlueprintCallable, Category = "Inventory")
+	TArray<FAmmoSlot> GetAmmoSlots();
 
-	UFUNCTION(Server, Reliable, BlueprintCallable, Category = "Inv")
-		void InitInventory_OnServer(const TArray<FWeaponSlot>& NewWeaponSlotsInfo, const TArray<FAmmoSlot>& NewAmmoSlotsInfo);
+	UFUNCTION(Server, Reliable, BlueprintCallable, Category = "Inventory")
+	void InitInventory_OnServer(const TArray<FWeaponSlot>& NewWeaponSlotsInfo, const TArray<FAmmoSlot>& NewAmmoSlotsInfo);
 
 	UFUNCTION(Server, Reliable)
-		void SwitchWeaponEvent_OnServer(FName WeaponName, FAdditionalWeaponInfo AdditionalInfo, int32 IndexSlot);
+	void SwitchWeaponEvent_OnServer(FName WeaponName, FAdditionalWeaponInfo AdditionalInfo, int32 IndexSlot);
 	UFUNCTION(NetMulticast, Reliable)
-		void AmmoChangeEvent_Multicast(EWeaponType TypeWeapon, int32 Cout);
+	void AmmoChangeEvent_Multicast(EWeaponType TypeWeapon, int32 Count);
 	UFUNCTION(NetMulticast, Reliable)
-		void WeaponAdditionalInfoChangeEvent_Multicast(int32 IndexWeapon, FAdditionalWeaponInfo AdditionalWeaponInfo);
+	void WeaponAdditionalInfoChangeEvent_Multicast(int32 IndexWeapon, FAdditionalWeaponInfo AdditionalWeaponInfo);
 	UFUNCTION(NetMulticast, Reliable)
-		void WeaponAmmoEmptyEvent_Multicast(EWeaponType TypeWeapon);
+	void WeaponAmmoEmptyEvent_Multicast(EWeaponType TypeWeapon);
 	UFUNCTION(NetMulticast, Reliable)
-		void WeaponAmmoAvailableEvent_Multicast(EWeaponType TypeWeapon);
+	void WeaponAmmoAvailableEvent_Multicast(EWeaponType TypeWeapon);
 	UFUNCTION(NetMulticast, Reliable)
-		void UpdateWeaponSlotsEvent_Multicast(int32 IndexSlotChange, FWeaponSlot NewInfo);
+	void UpdateWeaponSlotsEvent_Multicast(int32 IndexSlotChange, FWeaponSlot NewInfo);
 	UFUNCTION(NetMulticast, Reliable)
-		void WeaponNotHaveRoundEvent_Multicast(int32 IndexSlotWeapon);
+	void WeaponNotHaveRoundEvent_Multicast(int32 IndexSlotWeapon);
 	UFUNCTION(NetMulticast, Reliable)
-		void WeaponHaveRoundEvent_Multicast(int32 IndexSlotWeapon);
+	void WeaponHaveRoundEvent_Multicast(int32 IndexSlotWeapon);
 };
