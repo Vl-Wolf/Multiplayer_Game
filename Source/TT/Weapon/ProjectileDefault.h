@@ -7,7 +7,7 @@
 #include "GameFramework/Actor.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "TT/FuncLibrary/Types.h"
-#include "Particles/ParticleSystemComponent.h"
+#include "NiagaraFunctionLibrary.h"
 #include "ProjectileDefault.generated.h"
 
 UCLASS()
@@ -25,8 +25,8 @@ public:
 	USphereComponent* BulletCollisionSphere = nullptr;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"), Category = Components)
 	UProjectileMovementComponent* ProjectileMovement = nullptr;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"), Category = Components)
-	UParticleSystemComponent* BulletFX = nullptr;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Components)
+	UNiagaraComponent* BulletNiagara = nullptr;
 
 	FProjectileInfo ProjectileInfo;
 
@@ -56,11 +56,11 @@ public:
 	UFUNCTION(NetMulticast, Reliable)
 	void InitVisualMeshProjectile_Multicast(UStaticMesh* NewMesh, FTransform MeshRelative);
 	UFUNCTION(NetMulticast, Reliable)
-	void InitVisualTrailProjectile_Multicast(UParticleSystem* NewTrail, FTransform TrailRelative);
+	void InitVisualTrailProjectile_Multicast(UNiagaraSystem* NewTrail, FTransform TrailRelative);
 	UFUNCTION(NetMulticast, Reliable)
 	void SpawnHitDecal_Multicast(UMaterialInterface* DecalMaterial, UPrimitiveComponent* OtherComponent, FHitResult HitResult);
 	UFUNCTION(NetMulticast, Reliable)
-	void SpawnHitFX_Multicast(UParticleSystem* FX, FHitResult HitResult);
+	void SpawnHitFX_Multicast(UNiagaraSystem* FX, FHitResult HitResult);
 	UFUNCTION(NetMulticast, Reliable)
 	void SpawnHitSound_Multicast(USoundBase* HitSound, FHitResult HitResult);
 	UFUNCTION(NetMulticast, Reliable)

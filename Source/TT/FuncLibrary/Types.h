@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "NiagaraFunctionLibrary.h"
 #include "Engine/DataTable.h"
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "Types.generated.h"
@@ -59,7 +60,7 @@ struct FProjectileInfo
 	FTransform ProjectileStaticMeshOffset = FTransform();
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="ProjectileSetting")
-	UParticleSystem* ProjectileTrailFX = nullptr;
+	UNiagaraSystem* ProjectileTrailFX = nullptr;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="ProjectileSetting")
 	FTransform ProjectileTrailFXOffset = FTransform();
@@ -83,7 +84,7 @@ struct FProjectileInfo
 	USoundBase* HitSound = nullptr;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="ProjectileFX")
-	TMap<TEnumAsByte<EPhysicalSurface>, UParticleSystem*> HitFXs;
+	TMap<TEnumAsByte<EPhysicalSurface>, UNiagaraSystem*> HitFXs;
 };
 
 USTRUCT(BlueprintType)
@@ -190,7 +191,7 @@ struct FWeaponInfo : public FTableRowBase
 	USoundBase* SoundWeaponReload = nullptr;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="FX")
-	UParticleSystem* WeaponFireEffect = nullptr;
+	UNiagaraSystem* WeaponFireEffect = nullptr;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Projectile")
 	FProjectileInfo ProjectileInfo;

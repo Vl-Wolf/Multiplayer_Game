@@ -5,6 +5,7 @@
 
 #include "Kismet/GameplayStatics.h"
 #include "Perception/AISense_Damage.h"
+#include "NiagaraComponent.h"
 
 
 // Sets default values
@@ -25,8 +26,8 @@ AProjectileDefault::AProjectileDefault()
 	BulletMesh->SetupAttachment(RootComponent);
 	BulletMesh->SetCanEverAffectNavigation(false);
 
-	BulletFX = CreateDefaultSubobject<UParticleSystemComponent>(TEXT("FX"));
-	BulletFX->SetupAttachment(RootComponent);
+	BulletNiagara = CreateDefaultSubobject<UNiagaraComponent>(TEXT("ProjectileNiagara"));
+	BulletNiagara->SetupAttachment(RootComponent);
 
 	ProjectileMovement = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("ProjectileMovement"));
 	ProjectileMovement->UpdatedComponent = RootComponent;
@@ -61,6 +62,15 @@ void AProjectileDefault::InitProjectile(FProjectileInfo InitParam)
 		BulletMesh->DestroyComponent();
 	}
 
+	if (InitParam.ProjectileTrailFX)
+	{
+		InitVisualTrailProjectile_Multicast(InitParam.ProjectileTrailFX, InitParam.ProjectileTrailFXOffset);
+	}
+	else
+	{
+		BulletNiagara->DestroyComponent();
+	}
+
 	InitVelocity_Multicast(InitParam.ProjectileInitSpeed, InitParam.ProjectileMaxSpeed);
 
 	ProjectileInfo = InitParam;
@@ -85,7 +95,7 @@ void AProjectileDefault::BulletCollisionSphereHit(UPrimitiveComponent* HitComp, 
 
 		if (ProjectileInfo.HitFXs.Contains(MySurfaceType))
 		{
-			UParticleSystem* MyParticle = ProjectileInfo.HitFXs[MySurfaceType];
+			UNiagaraSystem* MyParticle = ProjectileInfo.HitFXs[MySurfaceType];
 
 			if (MyParticle)
 			{
@@ -130,11 +140,16 @@ void AProjectileDefault::InitVisualMeshProjectile_Multicast_Implementation(UStat
 	BulletMesh->SetRelativeTransform(MeshRelative);
 }
 
-void AProjectileDefault::InitVisualTrailProjectile_Multicast_Implementation(UParticleSystem* NewTrail,
+void AProjectileDefault::InitVisualTrailProjectile_Multicast_Implementation(UNiagaraSystem* NewTrail,
 	FTransform TrailRelative)
 {
-	BulletFX->SetTemplate(NewTrail);
-	BulletFX->SetRelativeTransform(TrailRelative);
+	/*BulletFX->SetTemplate(NewTrail);
+	BulletFX->SetRelativeTransform(TrailRelative);*/
+
+	//UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), NewTrail, TrailRelative.GetLocation(), TrailRelative.Rotator(), FVector(1.0f));
+
+	BulletNiagara->SetAsset(NewTrail);
+	BulletNiagara->SetRelativeTransform(TrailRelative);
 }
 
 void AProjectileDefault::SpawnHitDecal_Multicast_Implementation(UMaterialInterface* DecalMaterial,
@@ -145,10 +160,12 @@ void AProjectileDefault::SpawnHitDecal_Multicast_Implementation(UMaterialInterfa
 									EAttachLocation::KeepWorldPosition, 10.0f);
 }
 
-void AProjectileDefault::SpawnHitFX_Multicast_Implementation(UParticleSystem* FX, FHitResult HitResult)
+void AProjectileDefault::SpawnHitFX_Multicast_Implementation(UNiagaraSystem* FX, FHitResult HitResult)
 {
-	UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), FX, FTransform(HitResult.ImpactNormal.Rotation(),
-									HitResult.ImpactPoint, FVector(1.0f)));
+	/*UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), FX, FTransform(HitResult.ImpactNormal.Rotation(),
+									HitResult.ImpactPoint, FVector(1.0f)));*/
+	UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), FX, HitResult.ImpactPoint,
+														HitResult.ImpactNormal.Rotation(), FVector(1.0f));
 }
 
 void AProjectileDefault::SpawnHitSound_Multicast_Implementation(USoundBase* HitSound, FHitResult HitResult)

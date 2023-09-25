@@ -10,6 +10,7 @@
 #include "Kismet/KismetMathLibrary.h"
 #include "Net/UnrealNetwork.h"
 #include "TT/Character/TT_InventoryComponent.h"
+#include "NiagaraFunctionLibrary.h"
 
 
 // Sets default values
@@ -215,6 +216,8 @@ void AWeaponDefault::Fire()
 													FLinearColor::Red, FLinearColor::Green,
 													5.0f);
 
+			
+
 			if (HitResult.GetActor() && HitResult.PhysMaterial.IsValid())
 			{
 				EPhysicalSurface MySurfaceType = UGameplayStatics::GetSurfaceType(HitResult);
@@ -231,7 +234,7 @@ void AWeaponDefault::Fire()
 
 				if (WeaponInfo.ProjectileInfo.HitFXs.Contains(MySurfaceType))
 				{
-					UParticleSystem* MyParticle = WeaponInfo.ProjectileInfo.HitFXs[MySurfaceType];
+					UNiagaraSystem* MyParticle = WeaponInfo.ProjectileInfo.HitFXs[MySurfaceType];
 
 					if (MyParticle)
 					{
@@ -488,7 +491,7 @@ void AWeaponDefault::ShellDropFire_Multicast_Implementation(UStaticMesh* DropMes
 	}
 }
 
-void AWeaponDefault::FXWeaponFire_Multicast_Implementation(UParticleSystem* FXFire, USoundBase* SoundFire)
+void AWeaponDefault::FXWeaponFire_Multicast_Implementation(UNiagaraSystem* FXFire, USoundBase* SoundFire)
 {
 	if (SoundFire)
 	{
@@ -496,7 +499,9 @@ void AWeaponDefault::FXWeaponFire_Multicast_Implementation(UParticleSystem* FXFi
 	}
 	if (FXFire)
 	{
-		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), FXFire, ShootLocation->GetComponentTransform());
+		//UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), FXFire, ShootLocation->GetComponentTransform());
+		UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), FXFire, ShootLocation->GetComponentLocation(),
+															ShootLocation->GetComponentRotation());
 	}
 }
 
@@ -508,10 +513,12 @@ void AWeaponDefault::SpawnTraceHitDecal_Multicast_Implementation(UMaterialInterf
 											EAttachLocation::KeepWorldPosition, 10.0f);
 }
 
-void AWeaponDefault::SpawnTraceHitFX_Multicast_Implementation(UParticleSystem* FX, FHitResult HitResult)
+void AWeaponDefault::SpawnTraceHitFX_Multicast_Implementation(UNiagaraSystem* FX, FHitResult HitResult)
 {
-	UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), FX, FTransform(HitResult.ImpactNormal.Rotation(),
-									HitResult.ImpactPoint, FVector(1.0f)));
+	/*UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), FX, FTransform(HitResult.ImpactNormal.Rotation(),
+									HitResult.ImpactPoint, FVector(1.0f)));*/
+	UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), FX, HitResult.ImpactPoint,
+														HitResult.ImpactNormal.Rotation(), FVector(1.0f));
 }
 
 void AWeaponDefault::SpawnTraceHitSound_Multicast_Implementation(USoundBase* HitSound, FHitResult HitResult)

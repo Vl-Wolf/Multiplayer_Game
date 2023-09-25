@@ -125,12 +125,12 @@ public:
 								float LifeTimeMesh, float MassMesh, float PowerImpulse, float ImpulseRandomDispersion,
 								FVector LocalDir);
 	UFUNCTION(NetMulticast, Unreliable)
-	void FXWeaponFire_Multicast(UParticleSystem* FXFire, USoundBase* SoundFire);
+	void FXWeaponFire_Multicast(UNiagaraSystem* FXFire, USoundBase* SoundFire);
 
 	UFUNCTION(NetMulticast, Reliable)
 	void SpawnTraceHitDecal_Multicast(UMaterialInterface* DecalMaterial, FHitResult HitResult);
 	UFUNCTION(NetMulticast, Reliable)
-	void SpawnTraceHitFX_Multicast(UParticleSystem* FX, FHitResult HitResult);
+	void SpawnTraceHitFX_Multicast(UNiagaraSystem* FX, FHitResult HitResult);
 	UFUNCTION(NetMulticast, Reliable)
 	void SpawnTraceHitSound_Multicast(USoundBase* HitSound, FHitResult HitResult);
 
