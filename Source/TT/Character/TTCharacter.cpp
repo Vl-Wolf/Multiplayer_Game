@@ -44,7 +44,7 @@ ATTCharacter::ATTCharacter()
 	FollowCamera->bUsePawnControlRotation = false;
 	// Camera does not rotate relative to arm
 
-	HealthComponent = CreateDefaultSubobject<UTT_HealthComponent>(TEXT("HealthComponent"));
+	Health = CreateDefaultSubobject<UTT_HealthComponent>(TEXT("HealthComponent"));
 	InventoryComponent = CreateDefaultSubobject<UTT_InventoryComponent>(TEXT("InventoryComponent"));
 
 	PrimaryActorTick.bCanEverTick = true;
@@ -52,9 +52,9 @@ ATTCharacter::ATTCharacter()
 
 	bReplicates = true;
 
-	if (HealthComponent)
+	if (Health)
 	{
-		HealthComponent->OnDead.AddDynamic(this, &ATTCharacter::CharacterDead);
+		Health->OnDead.AddDynamic(this, &ATTCharacter::CharacterDead);
 	}
 
 	if (InventoryComponent)
@@ -151,7 +151,14 @@ void ATTCharacter::EnableRagdoll_Multicast_Implementation()
 float ATTCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator,
 	AActor* DamageCauser)
 {
-	return Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
+	float ActualDamage = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
+
+	if (Health && Health->GetIsAlive())
+	{
+		Health->ChangeHealthValue_OnServer(-DamageAmount);
+	}
+
+	return ActualDamage;
 }
 
 
@@ -208,7 +215,7 @@ void ATTCharacter::ChangeMovementState()
 
 void ATTCharacter::AttackEvent(bool bIsFiring)
 {
-	if (HealthComponent && HealthComponent->GetIsAlive())
+	if (Health && Health->GetIsAlive())
 	{
 		AWeaponDefault* MyWeapon = GetCurrentWeapon();
 		if (MyWeapon)
@@ -290,7 +297,7 @@ void ATTCharacter::InitWeapon(FName WeaponName, FAdditionalWeaponInfo Additional
 
 void ATTCharacter::TryReloadWeapon()
 {
-	if (HealthComponent && HealthComponent->GetIsAlive() && CurrentWeapon && !CurrentWeapon->WeaponReloading)
+	if (Health && Health->GetIsAlive() && CurrentWeapon && !CurrentWeapon->WeaponReloading)
 	{
 		TryReloadWeapon_OnServer();
 	}
@@ -383,9 +390,9 @@ int32 ATTCharacter::GetCurrentWeaponIndex()
 bool ATTCharacter::GetIsAlive()
 {
 	bool Result = false;
-	if (HealthComponent)
+	if (Health)
 	{
-		Result = HealthComponent->GetIsAlive();
+		Result = Health->GetIsAlive();
 	}
 
 	return Result;
