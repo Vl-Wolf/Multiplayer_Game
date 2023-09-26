@@ -67,6 +67,11 @@ ATTCharacter::ATTCharacter()
 void ATTCharacter::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
+
+	if (GetCurrentWeapon())
+	{
+		RotateWeaponTick(GetCurrentWeapon());
+	}
 }
 
 void ATTCharacter::InputSprintPressed()
@@ -270,7 +275,7 @@ void ATTCharacter::InitWeapon(FName WeaponName, FAdditionalWeaponInfo Additional
 					CurrentIndexWeapon = NewCurrentIndexWeapon;
 
 					//move to tick()
-					MyWeapon->SetActorRotation(FollowCamera->GetForwardVector().Rotation());
+					//MyWeapon->SetActorRotation(FollowCamera->GetForwardVector().Rotation());
 
 					MyWeapon->OnWeaponReloadStart.AddDynamic(this, &ATTCharacter::WeaponReloadStart);
 					MyWeapon->OnWeaponReloadEnd.AddDynamic(this, &ATTCharacter::WeaponReloadEnd);
@@ -457,4 +462,9 @@ void ATTCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 	
+}
+
+void ATTCharacter::RotateWeaponTick(AWeaponDefault* Weapon)
+{
+	Weapon->SetActorRotation(FollowCamera->GetForwardVector().Rotation());
 }

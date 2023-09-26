@@ -138,6 +138,8 @@ private:
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
 	virtual void BeginPlay() override;
+
+	void RotateWeaponTick(AWeaponDefault* Weapon);
 	
 };
 
