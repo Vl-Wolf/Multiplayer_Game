@@ -5,9 +5,6 @@
 
 ATT_PlayerState::ATT_PlayerState()
 {
-	WeaponSlot.Add(FWeaponSlot{"Rifle", 45});
-	WeaponSlot.Add(FWeaponSlot{"Railgun", 20});
-
-	AmmoSlot.Add(FAmmoSlot{EWeaponType::RifleType, 45, 150});
-	AmmoSlot.Add(FAmmoSlot{EWeaponType::RailgunType, 20, 60});
+	WeaponSlot.Add(FWeaponSlot{"Rifle", 45, EWeaponType::RifleType, 45,120});
+	WeaponSlot.Add(FWeaponSlot{"Railgun", 20, EWeaponType::RailgunType, 20, 60});
 }

@@ -286,11 +286,6 @@ FProjectileInfo AWeaponDefault::GetProjectile()
 	return  WeaponInfo.ProjectileInfo;
 }
 
-int8 AWeaponDefault::GetNumberProjectileByShoot() const
-{
-	return WeaponInfo.NumberProjectileByShoot;
-}
-
 int32 AWeaponDefault::GetWeaponRound()
 {
 	return AdditionalWeaponInfo.Round;

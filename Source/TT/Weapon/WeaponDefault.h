@@ -94,9 +94,7 @@ public:
 	bool CheckWeaponCanFire();
 
 	FProjectileInfo GetProjectile();
-
-	int8 GetNumberProjectileByShoot() const;
-
+	
 	UFUNCTION(BlueprintCallable)
 	int32 GetWeaponRound();
 

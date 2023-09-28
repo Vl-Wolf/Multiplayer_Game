@@ -44,8 +44,6 @@ public:
 
 	UPROPERTY(Replicated, EditAnywhere, BlueprintReadOnly, Category = "Weapons")
 	TArray<FWeaponSlot> WeaponSlots;
-	UPROPERTY(Replicated, EditAnywhere, BlueprintReadOnly, Category = "Weapons")
-	TArray<FAmmoSlot> AmmoSlots;
 
 	int32 MaxSlotsWeapon = 0;
 
@@ -86,11 +84,9 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "Inventory")
 	TArray<FWeaponSlot> GetWeaponSlots();
-	UFUNCTION(BlueprintCallable, Category = "Inventory")
-	TArray<FAmmoSlot> GetAmmoSlots();
 
 	UFUNCTION(Server, Reliable, BlueprintCallable, Category = "Inventory")
-	void InitInventory_OnServer(const TArray<FWeaponSlot>& NewWeaponSlotsInfo, const TArray<FAmmoSlot>& NewAmmoSlotsInfo);
+	void InitInventory_OnServer(const TArray<FWeaponSlot>& NewWeaponSlotsInfo);
 
 	UFUNCTION(Server, Reliable)
 	void SwitchWeaponEvent_OnServer(FName WeaponName, FAdditionalWeaponInfo AdditionalInfo, int32 IndexSlot);

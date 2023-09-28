@@ -16,7 +16,7 @@ void ATT_PlayerController::OnPossess(APawn* InPawn)
 	{
 		ATT_PlayerState* MyPlayerState = GetPlayerState<ATT_PlayerState>();
 		{
-			MyCharacter->GetInventoryComponent()->InitInventory_OnServer(MyPlayerState->WeaponSlot, MyPlayerState->AmmoSlot);
+			MyCharacter->GetInventoryComponent()->InitInventory_OnServer(MyPlayerState->WeaponSlot);
 		}
 	}
 }

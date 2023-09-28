@@ -176,17 +176,17 @@ void UTT_InventoryComponent::AmmoSlotChangeValue(EWeaponType TypeWeapon, int32 C
 {
 	bool bIsFind = false;
 	int8 i = 0;
-	while (i < AmmoSlots.Num() && !bIsFind)
+	while (i < WeaponSlots.Num() && !bIsFind)
 	{
-		if (AmmoSlots[i].WeaponType == TypeWeapon)
+		if (WeaponSlots[i].WeaponType == TypeWeapon)
 		{
-			AmmoSlots[i].Count += CountChangeAmmo;
-			if (AmmoSlots[i].Count > AmmoSlots[i].MaxCount)
+			WeaponSlots[i].Count += CountChangeAmmo;
+			if (WeaponSlots[i].Count > WeaponSlots[i].MaxCount)
 			{
-				AmmoSlots[i].Count = AmmoSlots[i].MaxCount;				
+				WeaponSlots[i].Count = WeaponSlots[i].MaxCount;				
 			}
 
-			AmmoChangeEvent_Multicast(AmmoSlots[i].WeaponType, AmmoSlots[i].Count);
+			AmmoChangeEvent_Multicast(WeaponSlots[i].WeaponType, WeaponSlots[i].Count);
 			bIsFind = true;
 		}
 		i++;
@@ -198,13 +198,13 @@ bool UTT_InventoryComponent::CheckAmmoForWeapon(EWeaponType TypeWeapon, int8& Av
 	AviableAmmoForWeapon = 0;
 	bool bIsFind = false;
 	int8 i = 0;
-	while (i < AmmoSlots.Num() && !bIsFind)
+	while (i < WeaponSlots.Num() && !bIsFind)
 	{
-		if (AmmoSlots[i].WeaponType == TypeWeapon)
+		if (WeaponSlots[i].WeaponType == TypeWeapon)
 		{
 			bIsFind = true;
-			AviableAmmoForWeapon = AmmoSlots[i].Count;
-			if (AmmoSlots[i].Count > 0)
+			AviableAmmoForWeapon = WeaponSlots[i].Count;
+			if (WeaponSlots[i].Count > 0)
 			{
 				return true;
 			}
@@ -228,9 +228,9 @@ bool UTT_InventoryComponent::CheckCanTakeAmmo(EWeaponType AmmoType)
 {
 	bool Result = false;
 	int8 i = 0;
-	while (i < AmmoSlots.Num() && !Result)
+	while (i < WeaponSlots.Num() && !Result)
 	{
-		if (AmmoSlots[i].WeaponType == AmmoType && AmmoSlots[i].Count < AmmoSlots[i].MaxCount)
+		if (WeaponSlots[i].WeaponType == AmmoType && WeaponSlots[i].Count < WeaponSlots[i].MaxCount)
 		{
 			Result = true;
 		}
@@ -339,15 +339,9 @@ TArray<FWeaponSlot> UTT_InventoryComponent::GetWeaponSlots()
 	return WeaponSlots;
 }
 
-TArray<FAmmoSlot> UTT_InventoryComponent::GetAmmoSlots()
-{
-	return AmmoSlots;
-}
-
-void UTT_InventoryComponent::InitInventory_OnServer_Implementation(const TArray<FWeaponSlot>& NewWeaponSlotsInfo, const TArray<FAmmoSlot>& NewAmmoSlotsInfo)
+void UTT_InventoryComponent::InitInventory_OnServer_Implementation(const TArray<FWeaponSlot>& NewWeaponSlotsInfo)
 {
 	WeaponSlots = NewWeaponSlotsInfo;
-	AmmoSlots = NewAmmoSlotsInfo;
 	
 	MaxSlotsWeapon = WeaponSlots.Num();
 
@@ -365,8 +359,6 @@ void UTT_InventoryComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(UTT_InventoryComponent, WeaponSlots);
-	DOREPLIFETIME(UTT_InventoryComponent, AmmoSlots);
-
 }
 
 void UTT_InventoryComponent::SwitchWeaponEvent_OnServer_Implementation(FName WeaponName, FAdditionalWeaponInfo AdditionalInfo, int32 IndexSlot)

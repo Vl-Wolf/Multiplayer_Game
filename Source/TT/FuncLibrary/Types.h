@@ -179,8 +179,6 @@ struct FWeaponInfo : public FTableRowBase
 	float ReloadTime = 0.0f;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="State")
 	int32 MaxRound = 10;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="State")
-	int32 NumberProjectileByShoot = 1;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Dispersion")
 	FWeaponDispersion WeaponDispersion;
@@ -239,18 +237,12 @@ struct FWeaponSlot
 	FName NameItem;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="WeaponSlot")
 	FAdditionalWeaponInfo AdditionalWeaponInfo;
-};
 
-USTRUCT(BlueprintType)
-struct FAmmoSlot
-{
-	GENERATED_BODY()
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="AmmoSlot")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="WeaponSlot")
 	EWeaponType WeaponType = EWeaponType::RifleType;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="AmmoSlot")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="WeaponSlot")
 	int32 Count = 100;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="AmmoSlot")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="WeaponSlot")
 	int32 MaxCount = 100;
 };
 

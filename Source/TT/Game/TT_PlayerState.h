@@ -21,6 +21,4 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Inventory")
 	TArray<FWeaponSlot> WeaponSlot;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Inventory")
-	TArray<FAmmoSlot> AmmoSlot;
 };
