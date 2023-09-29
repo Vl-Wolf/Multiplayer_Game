@@ -193,9 +193,9 @@ void UTT_InventoryComponent::AmmoSlotChangeValue(EWeaponType TypeWeapon, int32 C
 	}
 }
 
-bool UTT_InventoryComponent::CheckAmmoForWeapon(EWeaponType TypeWeapon, int8& AviableAmmoForWeapon)
+bool UTT_InventoryComponent::CheckAmmoForWeapon(EWeaponType TypeWeapon, int8& AvailableAmmoForWeapon)
 {
-	AviableAmmoForWeapon = 0;
+	AvailableAmmoForWeapon = 0;
 	bool bIsFind = false;
 	int8 i = 0;
 	while (i < WeaponSlots.Num() && !bIsFind)
@@ -203,7 +203,7 @@ bool UTT_InventoryComponent::CheckAmmoForWeapon(EWeaponType TypeWeapon, int8& Av
 		if (WeaponSlots[i].WeaponType == TypeWeapon)
 		{
 			bIsFind = true;
-			AviableAmmoForWeapon = WeaponSlots[i].Count;
+			AvailableAmmoForWeapon = WeaponSlots[i].Count;
 			if (WeaponSlots[i].Count > 0)
 			{
 				return true;
@@ -212,7 +212,7 @@ bool UTT_InventoryComponent::CheckAmmoForWeapon(EWeaponType TypeWeapon, int8& Av
 		i++;
 	}
 
-	if (AviableAmmoForWeapon <= 0)
+	if (AvailableAmmoForWeapon <= 0)
 	{
 		WeaponAmmoEmptyEvent_Multicast(TypeWeapon);
 	}
