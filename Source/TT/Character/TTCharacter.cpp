@@ -74,28 +74,6 @@ void ATTCharacter::Tick(float DeltaSeconds)
 	}
 }
 
-void ATTCharacter::InputSprintPressed()
-{
-	ChangeMovementState();
-}
-
-void ATTCharacter::InputSprintReleased()
-{
-	ChangeMovementState();
-}
-
-void ATTCharacter::InputAimPressed()
-{
-	ChangeMovementState();
-	CameraBoom->TargetArmLength = 30.0f;
-}
-
-void ATTCharacter::InputAimReleased()
-{
-	ChangeMovementState();
-	CameraBoom->TargetArmLength = 100.0f;
-}
-
 EMovementState ATTCharacter::GetMovementState()
 {
 	return MovementState;
@@ -232,6 +210,25 @@ void ATTCharacter::AttackEvent(bool bIsFiring)
 			UE_LOG(LogTemp, Warning, TEXT("ATTCharacter::AttackCharEvent - CurrentWeapon -NULL"));
 		}
 	}
+}
+
+void ATTCharacter::AimEvent(bool bIsAiming)
+{
+	if (bIsAiming)
+	{
+		ChangeMovementState();
+		CameraBoom->TargetArmLength = 30.0f;
+	}
+	else
+	{
+		ChangeMovementState();
+		CameraBoom->TargetArmLength = 100.0f;
+	}
+}
+
+void ATTCharacter::SprintEvent()
+{
+	ChangeMovementState();
 }
 
 void ATTCharacter::InitWeapon(FName WeaponName, FAdditionalWeaponInfo AdditionalWeaponInfo, int32 NewCurrentIndexWeapon)

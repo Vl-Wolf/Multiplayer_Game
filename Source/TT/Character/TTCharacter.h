@@ -30,12 +30,6 @@ public:
 	FORCEINLINE USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
 	/** Returns FollowCamera subobject **/
 	FORCEINLINE UCameraComponent* GetFollowCamera() const { return FollowCamera; }
-	
-	void InputSprintPressed();
-	void InputSprintReleased();
-
-	void InputAimPressed();
-	void InputAimReleased();
 
 protected:
 
@@ -82,6 +76,8 @@ public:
 	void ChangeMovementState();
 
 	void AttackEvent(bool bIsFiring);
+	void AimEvent(bool bIsAiming);
+	void SprintEvent();
 
 	UFUNCTION()
 	void InitWeapon(FName WeaponName, FAdditionalWeaponInfo AdditionalWeaponInfo, int32 NewCurrentIndexWeapon);

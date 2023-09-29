@@ -31,9 +31,12 @@ protected:
 
 	void Jump();
 	void StopJump();
-	void Aim();
-	void Sprint();
-	void Fire();
+	void AimPressed();
+	void AimReleased();
+	void SprintPressed();
+	void SprintReleased();
+	void FirePressed();
+	void FireReleased();
 	void Reload();
 	void ChangeWeapon();
 

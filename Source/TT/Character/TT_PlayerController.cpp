@@ -39,13 +39,13 @@ void ATT_PlayerController::SetupInputComponent()
 	//Action
 	InputComponent->BindAction("Jump", IE_Pressed, this, &ATT_PlayerController::Jump);
 	InputComponent->BindAction("Jump", IE_Released, this, &ATT_PlayerController::StopJump);
-	InputComponent->BindAction("Aim", IE_Pressed, this, &ATT_PlayerController::Aim);
-	InputComponent->BindAction("Aim", IE_Released, this, &ATT_PlayerController::Aim);
-	InputComponent->BindAction("Sprint", IE_Pressed, this, &ATT_PlayerController::Sprint);
-	InputComponent->BindAction("Sprint", IE_Released, this, &ATT_PlayerController::Sprint);
+	InputComponent->BindAction("Aim", IE_Pressed, this, &ATT_PlayerController::AimPressed);
+	InputComponent->BindAction("Aim", IE_Released, this, &ATT_PlayerController::AimReleased);
+	InputComponent->BindAction("Sprint", IE_Pressed, this, &ATT_PlayerController::SprintPressed);
+	InputComponent->BindAction("Sprint", IE_Released, this, &ATT_PlayerController::SprintReleased);
 	InputComponent->BindAction("Reload", IE_Pressed, this, &ATT_PlayerController::Reload);
-	InputComponent->BindAction("Fire", IE_Pressed, this, &ATT_PlayerController::Fire);
-	InputComponent->BindAction("Fire", IE_Released, this, &ATT_PlayerController::Fire);
+	InputComponent->BindAction("Fire", IE_Pressed, this, &ATT_PlayerController::FirePressed);
+	InputComponent->BindAction("Fire", IE_Released, this, &ATT_PlayerController::FireReleased);
 	InputComponent->BindAction("ChangeWeapon", IE_Pressed, this, &ATT_PlayerController::ChangeWeapon);
 	
 }
@@ -106,47 +106,51 @@ void ATT_PlayerController::StopJump()
 	}
 }
 
-void ATT_PlayerController::Aim()
+void ATT_PlayerController::AimPressed()
 {
-	ATTCharacter* MyCharacter = Cast<ATTCharacter>(GetPawn());
-	
-	if (!bIsAiming)
+	if (!bIsSprinting)
 	{
+		ATTCharacter* MyCharacter = Cast<ATTCharacter>(GetPawn());
 		if (MyCharacter)
 		{
 			bIsAiming = true;
-			MyCharacter->InputAimPressed();
-		}
-	}
-	else
-	{
-		if (MyCharacter)
-		{
-			bIsAiming = false;
-			MyCharacter->InputAimReleased();
+			MyCharacter->AimEvent(bIsAiming);
 		}
 	}
 }
 
-void ATT_PlayerController::Sprint()
+void ATT_PlayerController::AimReleased()
 {
 	ATTCharacter* MyCharacter = Cast<ATTCharacter>(GetPawn());
-	
+	if (MyCharacter)
+	{
+		bIsAiming = false;
+		MyCharacter->AimEvent(bIsAiming);
+	}
+}
+
+void ATT_PlayerController::SprintPressed()
+{
 	if (!bIsSprinting)
 	{
+		ATTCharacter* MyCharacter = Cast<ATTCharacter>(GetPawn());
 		if (MyCharacter)
 		{
 			bIsSprinting = true;
-			MyCharacter->InputSprintPressed();
+			MyCharacter->SprintEvent();
+			AimReleased();
+			FireReleased();
 		}
 	}
-	else
+}
+
+void ATT_PlayerController::SprintReleased()
+{
+	ATTCharacter* MyCharacter = Cast<ATTCharacter>(GetPawn());
+	if (MyCharacter)
 	{
-		if (MyCharacter)
-		{
-			bIsSprinting = false;
-			MyCharacter->InputSprintReleased();
-		}
+		bIsSprinting = false;
+		MyCharacter->SprintEvent();
 	}
 }
 
@@ -170,24 +174,25 @@ void ATT_PlayerController::ChangeWeapon()
 	}
 }
 
-void ATT_PlayerController::Fire()
+void ATT_PlayerController::FirePressed()
 {
-	ATTCharacter* MyCharacter = Cast<ATTCharacter>(GetPawn());
-	
-	if (!bIsFiring)
+	if (!bIsSprinting)
 	{
+		ATTCharacter* MyCharacter = Cast<ATTCharacter>(GetPawn());
 		if (MyCharacter)
 		{
 			bIsFiring = true;
 			MyCharacter->AttackEvent(bIsFiring);
 		}
 	}
-	else
+}
+
+void ATT_PlayerController::FireReleased()
+{
+	ATTCharacter* MyCharacter = Cast<ATTCharacter>(GetPawn());
+	if (MyCharacter)
 	{
-		if (MyCharacter)
-		{
-			bIsFiring = false;
-			MyCharacter->AttackEvent(bIsFiring);
-		}
+		bIsFiring = false;
+		MyCharacter->AttackEvent(bIsFiring);
 	}
 }
